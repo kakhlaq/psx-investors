@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PSX Book Closures with Payouts</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        h1 {
+            color: #0056b3;
+            margin-bottom: 10px;
+        }
+        
+        .note {
+            background-color: #f8f9fa;
+            padding: 10px 15px;
+            border-left: 4px solid #0056b3;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        th {
+            background-color: #0056b3;
+            color: white;
+            font-weight: bold;
+        }
+        
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .symbol {
+            font-weight: bold;
+            color: #0056b3;
+        }
+        
+        .payout {
+            font-weight: bold;
+        }
+        
+        .dividend {
+            color: #28a745;
+        }
+        
+        .right {
+            color: #dc3545;
+        }
+        
+        @media (max-width: 768px) {
+            table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>PSX Book Closures with Payouts</h1>
+    
+    <div class="note">
+        <strong>Note:</strong> Current PSX rule for Ex Date is "BC - Z" which means that book closure start date minus 2 working days will become the Ex-date which further means that book closure start date minus 3 working days will become last date of spot.
+    </div>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Symbol</th>
+                <th>Company Name</th>
+                <th>Face Value</th>
+                <th>Last Close</th>
+                <th>BG From</th>
+                <th>BG To</th>
+                <th>Payout</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="symbol">UBL</td>
+                <td>United Bank Limited</td>
+                <td>10</td>
+                <td>373.48</td>
+                <td>2025-07-22</td>
+                <td>2025-07-24</td>
+                <td class="payout dividend">Dividend=160%</td>
+            </tr>
+            <tr>
+                <td class="symbol">EXIDE</td>
+                <td>Exide Pakistan Limited</td>
+                <td>10</td>
+                <td>870.73</td>
+                <td>2025-07-23</td>
+                <td>2025-07-29</td>
+                <td class="payout dividend">Dividend=100%</td>
+            </tr>
+            <tr>
+                <td class="symbol">DCR</td>
+                <td>Dolmen City REIT</td>
+                <td>10</td>
+                <td>28.01</td>
+                <td>2025-07-25</td>
+                <td>2025-07-27</td>
+                <td class="payout dividend">Dividend=9.30%</td>
+            </tr>
+            <tr>
+                <td class="symbol">NITGETF</td>
+                <td>NIT Pakistan Gateway ETF</td>
+                <td>10</td>
+                <td>29.56</td>
+                <td>2025-07-27</td>
+                <td>2025-07-28</td>
+                <td class="payout dividend">Dividend=23.285%</td>
+            </tr>
+            <tr>
+                <td class="symbol">BWCL</td>
+                <td>Bestway Cement Limited</td>
+                <td>10</td>
+                <td>457.58</td>
+                <td>2025-08-09</td>
+                <td>2025-08-15</td>
+                <td class="payout dividend">Dividend=100%</td>
+            </tr>
+            <tr>
+                <td class="symbol">AWTX</td>
+                <td>Alawasaya Textile & Weaving Mills Limited</td>
+                <td>10</td>
+                <td>1409.56</td>
+                <td>-</td>
+                <td>-</td>
+                <td class="payout dividend">Dividend=25%</td>
+            </tr>
+            <tr>
+                <td class="symbol">BAPL</td>
+                <td>Banvary Air Product Limited</td>
+                <td>10</td>
+                <td>43.96</td>
+                <td>-</td>
+                <td>-</td>
+                <td class="payout right">Right=7997.32%</td>
+            </tr>
+            <tr>
+                <td class="symbol">DSL</td>
+                <td>Deal Steels Limited</td>
+                <td>10</td>
+                <td>8.88</td>
+                <td>-</td>
+                <td>-</td>
+                <td class="payout right">Right=100%</td>
+            </tr>
+            <tr>
+                <td class="symbol">FRSM</td>
+                <td>Farm Sugar Mills Limited</td>
+                <td>10</td>
+                <td>43.47</td>
+                <td>-</td>
+                <td>-</td>
+                <td class="payout right">Right=58%</td>
+            </tr>
+            <tr>
+                <td class="symbol">GAIT</td>
+                <td>Gatron Industries Limited</td>
+                <td>10</td>
+                <td>162.87</td>
+                <td>-</td>
+                <td>-</td>
+                <td class="payout right">Right=41.71%</td>
+            </tr>
+            <tr>
+                <td class="symbol">KSPP</td>
+                <td>K.S.B. Pumps Co. Limited</td>
+                <td>10</td>
+                <td>207.73</td>
+                <td>-</td>
+                <td>-</td>
+                <td class="payout right">Right=134.0909%</td>
+            </tr>
+            <tr>
+                <td class="symbol">LSEVL</td>
+                <td>Lee Ventures Limited</td>
+                <td>10</td>
+                <td>11.50</td>
+                <td>-</td>
+                <td>-</td>
+                <td class="payout right">Right=38.970%</td>
+            </tr>
+            <tr>
+                <td class="symbol">MUGHAL</td>
+                <td>Mughal Iron and Steel Industries Limited</td>
+                <td>10</td>
+                <td>67.58</td>
+                <td>-</td>
+                <td>-</td>
+                <td class="payout right">Right=9.85%</td>
+            </tr>
+            <tr>
+                <td class="symbol">MUREB</td>
+                <td>Murree Brewery Company Limited</td>
+                <td>10</td>
+                <td>893.47</td>
+                <td>-</td>
+                <td>-</td>
+                <td class="payout dividend">Dividend=100%</td>
+            </tr>
+            <tr>
+                <td class="symbol">OBOY</td>
+                <td>Oliboy Energy Limited</td>
+                <td>10</td>
+                <td>9.37</td>
+                <td>-</td>
+                <td>-</td>
+                <td class="payout right">Right=100%</td>
+            </tr>
+            <tr>
+                <td class="symbol">FECO</td>
+                <td>Pakistan Engineering Company Limited</td>
+                <td>10</td>
+                <td>738.19</td>
+                <td>-</td>
+                <td>-</td>
+                <td class="payout right">Right=50%</td>
+            </tr>
+            <tr>
+                <td class="symbol">PKGI</td>
+                <td>Pakistan General Insurance Company Limited</td>
+                <td>10</td>
+                <td>10.69</td>
+                <td>-</td>
+                <td>-</td>
+                <td class="payout right">Right=7.76%</td>
+            </tr>
+            <tr>
+                <td class="symbol">PPP</td>
+                <td>Pakistan Paper Products Limited</td>
+                <td>10</td>
+                <td>217.72</td>
+                <td>-</td>
+                <td>-</td>
+                <td class="payout dividend">Dividend=10%</td>
+            </tr>
+            <tr>
+                <td class="symbol">STYLERS</td>
+                <td>Stylers International Limited</td>
+                <td>10</td>
+                <td>43.50</td>
+                <td>-</td>
+                <td>-</td>
+                <td class="payout right">Right=12.3%</td>
+            </tr>
+            <tr>
+                <td class="symbol">TOMCIL</td>
+                <td>The Organic Meat Company Limited</td>
+                <td>10</td>
+                <td>34.49</td>
+                <td>-</td>
+                <td>-</td>
+                <td class="payout right">Right=20.203%</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <script>
+        // You can add JavaScript here for sorting/filtering if needed
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('PSX Book Closures table loaded');
+        });
+    </script>
+</body>
+</html>
