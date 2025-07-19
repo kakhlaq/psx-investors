@@ -19,12 +19,11 @@
         
         <div class="note mb-4">
             <strong>Note:</strong> Current PSX rule for Ex Date is "BC - Z" which means that book closure start date minus 2 working days will become the Ex-date which further means that book closure start date minus 3 working days will become last date of spot.
-            <div class="last-updated mt-2" id="lastUpdated"></div>
+            <div class="last-updated mt-2">Last updated: <span id="lastUpdated"></span></div>
         </div>
         
         <button id="refreshBtn" class="btn btn-primary mb-3">
-            <span class="spinner-border spinner-border-sm d-none" id="spinner"></span>
-            Refresh Data
+            Refresh Table
         </button>
         
         <div class="table-responsive">
@@ -46,64 +45,61 @@
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        // Static data - contains all rows from your screenshot
+        const closuresData = [
+            { symbol: "UBL", company: "United Bank Limited", faceValue: "10", lastClose: "373.48", bgFrom: "2025-07-22", bgTo: "2025-07-24", payout: "Dividend=160%" },
+            { symbol: "EXIDE", company: "Exide Pakistan Limited", faceValue: "10", lastClose: "870.73", bgFrom: "2025-07-23", bgTo: "2025-07-29", payout: "Dividend=100%" },
+            { symbol: "DCR", company: "Dolmen City REIT", faceValue: "10", lastClose: "28.01", bgFrom: "2025-07-25", bgTo: "2025-07-27", payout: "Dividend=9.30%" },
+            { symbol: "NITGETF", company: "NIT Pakistan Gateway ETF", faceValue: "10", lastClose: "29.56", bgFrom: "2025-07-27", bgTo: "2025-07-28", payout: "Dividend=23.285%" },
+            { symbol: "BWCL", company: "Bestway Cement Limited", faceValue: "10", lastClose: "457.58", bgFrom: "2025-08-09", bgTo: "2025-08-15", payout: "Dividend=100%" },
+            { symbol: "AWTX", company: "Alawasaya Textile & Weaving Mills Limited", faceValue: "10", lastClose: "1409.56", bgFrom: "-", bgTo: "-", payout: "Dividend=25%" },
+            { symbol: "BAPL", company: "Banvary Air Product Limited", faceValue: "10", lastClose: "43.96", bgFrom: "-", bgTo: "-", payout: "Right=7997.32%" },
+            { symbol: "DSL", company: "Deal Steels Limited", faceValue: "10", lastClose: "8.88", bgFrom: "-", bgTo: "-", payout: "Right=100%" },
+            { symbol: "FRSM", company: "Farm Sugar Mills Limited", faceValue: "10", lastClose: "43.47", bgFrom: "-", bgTo: "-", payout: "Right=58%" },
+            { symbol: "GAIT", company: "Gatron Industries Limited", faceValue: "10", lastClose: "162.87", bgFrom: "-", bgTo: "-", payout: "Right=41.71%" },
+            { symbol: "KSPP", company: "K.S.B. Pumps Co. Limited", faceValue: "10", lastClose: "207.73", bgFrom: "-", bgTo: "-", payout: "Right=134.0909%" },
+            { symbol: "LSEVL", company: "Lee Ventures Limited", faceValue: "10", lastClose: "11.50", bgFrom: "-", bgTo: "-", payout: "Right=38.970%" },
+            { symbol: "MUGHAL", company: "Mughal Iron and Steel Industries Limited", faceValue: "10", lastClose: "67.58", bgFrom: "-", bgTo: "-", payout: "Right=9.85%" },
+            { symbol: "MUREB", company: "Murree Brewery Company Limited", faceValue: "10", lastClose: "893.47", bgFrom: "-", bgTo: "-", payout: "Dividend=100%" },
+            { symbol: "OBOY", company: "Oliboy Energy Limited", faceValue: "10", lastClose: "9.37", bgFrom: "-", bgTo: "-", payout: "Right=100%" },
+            { symbol: "FECO", company: "Pakistan Engineering Company Limited", faceValue: "10", lastClose: "738.19", bgFrom: "-", bgTo: "-", payout: "Right=50%" },
+            { symbol: "PKGI", company: "Pakistan General Insurance Company Limited", faceValue: "10", lastClose: "10.69", bgFrom: "-", bgTo: "-", payout: "Right=7.76%" },
+            { symbol: "PPP", company: "Pakistan Paper Products Limited", faceValue: "10", lastClose: "217.72", bgFrom: "-", bgTo: "-", payout: "Dividend=10%" },
+            { symbol: "STYLERS", company: "Stylers International Limited", faceValue: "10", lastClose: "43.50", bgFrom: "-", bgTo: "-", payout: "Right=12.3%" },
+            { symbol: "TOMCIL", company: "The Organic Meat Company Limited", faceValue: "10", lastClose: "34.49", bgFrom: "-", bgTo: "-", payout: "Right=20.203%" }
+        ];
+
+        function renderTable() {
             const tableBody = document.getElementById('tableBody');
-            const refreshBtn = document.getElementById('refreshBtn');
-            const spinner = document.getElementById('spinner');
-            const lastUpdated = document.getElementById('lastUpdated');
+            let html = '';
             
-            // Load data initially
-            fetchData();
-            
-            // Refresh button click handler
-            refreshBtn.addEventListener('click', fetchData);
-            
-            async function fetchData() {
-                try {
-                    spinner.classList.remove('d-none');
-                    refreshBtn.disabled = true;
-                    
-                    const response = await fetch('http://localhost:3000/api/book-closures');
-                    const { success, data, lastUpdated: updatedTime } = await response.json();
-                    
-                    if (success) {
-                        renderTable(data);
-                        const date = new Date(updatedTime);
-                        lastUpdated.textContent = `Last updated: ${date.toLocaleString()}`;
-                    }
-                } catch (error) {
-                    console.error('Error fetching data:', error);
-                    alert('Failed to fetch data. Please try again later.');
-                } finally {
-                    spinner.classList.add('d-none');
-                    refreshBtn.disabled = false;
-                }
-            }
-            
-            function renderTable(data) {
-                tableBody.innerHTML = '';
-                
-                if (data.length === 0) {
-                    tableBody.innerHTML = '<tr><td colspan="7" class="text-center">No data available</td></tr>';
-                    return;
-                }
-                
-                data.forEach(item => {
-                    const row = document.createElement('tr');
-                    const payoutType = item.payout.includes('Dividend') ? 'dividend' : 'right';
-                    
-                    row.innerHTML = `
+            closuresData.forEach(item => {
+                const payoutClass = item.payout.includes('Dividend') ? 'dividend' : 'right';
+                html += `
+                    <tr>
                         <td class="symbol">${item.symbol}</td>
                         <td>${item.company}</td>
                         <td>${item.faceValue}</td>
                         <td>${item.lastClose}</td>
                         <td>${item.bgFrom}</td>
                         <td>${item.bgTo}</td>
-                        <td class="${payoutType}">${item.payout}</td>
-                    `;
-                    tableBody.appendChild(row);
-                });
-            }
+                        <td class="${payoutClass}">${item.payout}</td>
+                    </tr>
+                `;
+            });
+            
+            tableBody.innerHTML = html;
+            document.getElementById('lastUpdated').textContent = new Date().toLocaleString();
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initial render
+            renderTable();
+            
+            // Refresh button
+            document.getElementById('refreshBtn').addEventListener('click', function() {
+                renderTable();
+            });
         });
     </script>
 </body>
