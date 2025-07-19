@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PSX Book Closures with Payouts</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        h1 {
+            color: #0056b3;
+            margin-bottom: 10px;
+        }
+        
+        .note {
+            background-color: #f8f9fa;
+            padding: 10px 15px;
+            border-left: 4px solid #0056b3;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        
+        .controls {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        button, select, input {
+            padding: 8px 12px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+        
+        button {
+            background-color: #0056b3;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        
+        button:hover {
+            background-color: #004494;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        th {
+            background-color: #0056b3;
+            color: white;
+            font-weight: bold;
+            position: sticky;
+            top: 0;
+        }
+        
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .symbol {
+            font-weight: bold;
+            color: #0056b3;
+        }
+        
+        .payout {
+            font-weight: bold;
+        }
+        
+        .dividend {
+            color: #28a745;
+        }
+        
+        .right {
+            color: #dc3545;
+        }
+        
+        @media (max-width: 768px) {
+            table {
+                display: block;
+                overflow-x: auto;
+            }
+            
+            .controls {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>PSX Book Closures with Payouts</h1>
+    
+    <div class="note">
+        <strong>Note:</strong> Current PSX rule for Ex Date is "BC - Z" which means that book closure start date minus 2 working days will become the Ex-date which further means that book closure start date minus 3 working days will become last date of spot.
+        <div id="lastUpdated" style="margin-top: 5px; font-style: italic;"></div>
+    </div>
+    
+    <div class="controls">
+        <select id="typeFilter">
+            <option value="">All Types</option>
+            <option value="Dividend">Dividend</option>
+            <option value="Right">Right</option>
+        </select>
+        
+        <input type="text" id="searchInput" placeholder="Search by symbol or company...">
+        
+        <button id="refreshBtn">Refresh Data</button>
+    </div>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Symbol</th>
+                <th>Company Name</th>
+                <th>Face Value</th>
+                <th>Last Close</th>
+                <th>BG From</th>
+                <th>BG To</th>
+                <th>Payout</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody">
+            <!-- Data will be loaded dynamically -->
+        </tbody>
+    </table>
+
+    <script>
+        // All your data in a structured format
+        const closuresData = [
+            { symbol: "UBL", company: "United Bank Limited", faceValue: "10", lastClose: "373.48", bgFrom: "2025-07-22", bgTo: "2025-07-24", payout: "Dividend=160%" },
+            { symbol: "EXIDE", company: "Exide Pakistan Limited", faceValue: "10", lastClose: "870.73", bgFrom: "2025-07-23", bgTo: "2025-07-29", payout: "Dividend=100%" },
+            { symbol: "DCR", company: "Dolmen City REIT", faceValue: "10", lastClose: "28.01", bgFrom: "2025-07-25", bgTo: "2025-07-27", payout: "Dividend=9.30%" },
+            { symbol: "NITGETF", company: "NIT Pakistan Gateway ETF", faceValue: "10", lastClose: "29.56", bgFrom: "2025-07-27", bgTo: "2025-07-28", payout: "Dividend=23.285%" },
+            { symbol: "BWCL", company: "Bestway Cement Limited", faceValue: "10", lastClose: "457.58", bgFrom: "2025-08-09", bgTo: "2025-08-15", payout: "Dividend=100%" },
+            { symbol: "AWTX", company: "Alawasaya Textile & Weaving Mills Limited", faceValue: "10", lastClose: "1409.56", bgFrom: "-", bgTo: "-", payout: "Dividend=25%" },
+            { symbol: "BAPL", company: "Banvary Air Product Limited", faceValue: "10", lastClose: "43.96", bgFrom: "-", bgTo: "-", payout: "Right=7997.32%" },
+            { symbol: "DSL", company: "Deal Steels Limited", faceValue: "10", lastClose: "8.88", bgFrom: "-", bgTo: "-", payout: "Right=100%" },
+            { symbol: "FRSM", company: "Farm Sugar Mills Limited", faceValue: "10", lastClose: "43.47", bgFrom: "-", bgTo: "-", payout: "Right=58%" },
+            { symbol: "GAIT", company: "Gatron Industries Limited", faceValue: "10", lastClose: "162.87", bgFrom: "-", bgTo: "-", payout: "Right=41.71%" },
+            { symbol: "KSPP", company: "K.S.B. Pumps Co. Limited", faceValue: "10", lastClose: "207.73", bgFrom: "-", bgTo: "-", payout: "Right=134.0909%" },
+            { symbol: "LSEVL", company: "Lee Ventures Limited", faceValue: "10", lastClose: "11.50", bgFrom: "-", bgTo: "-", payout: "Right=38.970%" },
+            { symbol: "MUGHAL", company: "Mughal Iron and Steel Industries Limited", faceValue: "10", lastClose: "67.58", bgFrom: "-", bgTo: "-", payout: "Right=9.85%" },
+            { symbol: "MUREB", company: "Murree Brewery Company Limited", faceValue: "10", lastClose: "893.47", bgFrom: "-", bgTo: "-", payout: "Dividend=100%" },
+            { symbol: "OBOY", company: "Oliboy Energy Limited", faceValue: "10", lastClose: "9.37", bgFrom: "-", bgTo: "-", payout: "Right=100%" },
+            { symbol: "FECO", company: "Pakistan Engineering Company Limited", faceValue: "10", lastClose: "738.19", bgFrom: "-", bgTo: "-", payout: "Right=50%" },
+            { symbol: "PKGI", company: "Pakistan General Insurance Company Limited", faceValue: "10", lastClose: "10.69", bgFrom: "-", bgTo: "-", payout: "Right=7.76%" },
+            { symbol: "PPP", company: "Pakistan Paper Products Limited", faceValue: "10", lastClose: "217.72", bgFrom: "-", bgTo: "-", payout: "Dividend=10%" },
+            { symbol: "STYLERS", company: "Stylers International Limited", faceValue: "10", lastClose: "43.50", bgFrom: "-", bgTo: "-", payout: "Right=12.3%" },
+            { symbol: "TOMCIL", company: "The Organic Meat Company Limited", faceValue: "10", lastClose: "34.49", bgFrom: "-", bgTo: "-", payout: "Right=20.203%" }
+        ];
+
+        // DOM elements
+        const tableBody = document.getElementById('tableBody');
+        const typeFilter = document.getElementById('typeFilter');
+        const searchInput = document.getElementById('searchInput');
+        const refreshBtn = document.getElementById('refreshBtn');
+        const lastUpdated = document.getElementById('lastUpdated');
+
+        // Function to render the table
+        function renderTable(data = closuresData) {
+            tableBody.innerHTML = '';
+            
+            data.forEach(item => {
+                const row = document.createElement('tr');
+                const payoutType = item.payout.includes('Dividend') ? 'dividend' : 'right';
+                
+                row.innerHTML = `
+                    <td class="symbol">${item.symbol}</td>
+                    <td>${item.company}</td>
+                    <td>${item.faceValue}</td>
+                    <td>${item.lastClose}</td>
+                    <td>${item.bgFrom}</td>
+                    <td>${item.bgTo}</td>
+                    <td class="payout ${payoutType}">${item.payout}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+            
+            // Update last updated time
+            lastUpdated.textContent = `Last updated: ${new Date().toLocaleString()}`;
+        }
+
+        // Function to filter data
+        function filterData() {
+            const type = typeFilter.value;
+            const searchTerm = searchInput.value.toLowerCase();
+            
+            const filteredData = closuresData.filter(item => {
+                // Filter by type
+                if (type && !item.payout.includes(type)) return false;
+                
+                // Filter by search term
+                if (searchTerm && 
+                    !item.symbol.toLowerCase().includes(searchTerm) && 
+                    !item.company.toLowerCase().includes(searchTerm)) {
+                    return false;
+                }
+                
+                return true;
+            });
+            
+            renderTable(filteredData);
+        }
+
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            renderTable();
+            
+            typeFilter.addEventListener('change', filterData);
+            searchInput.addEventListener('input', filterData);
+            refreshBtn.addEventListener('click', () => {
+                renderTable();
+                typeFilter.value = '';
+                searchInput.value = '';
+            });
+        });
+    </script>
+</body>
+</html>
